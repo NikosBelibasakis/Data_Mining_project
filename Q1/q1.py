@@ -1,4 +1,4 @@
-#version 2
+#version 3
 
 import os
 import pandas as pd
@@ -31,10 +31,16 @@ for csv_file in csv_files:
 new_data_path = os.path.join(current_dir, 'new_data')
 os.makedirs(new_data_path, exist_ok=True)
 
+# Columns to round to 4 decimal digits (back_x,back_y,back_z,thigh_x,thigh_y,thigh_z)
+columns_to_round = ["back_x", "back_y", "back_z", "thigh_x", "thigh_y", "thigh_z"]
+
 # Sample every 10 rows and create a new CSV file for each original CSV
 for filename, df in dataframes_dict.items():
     # Sample every 10th row
     sampled_df = df.iloc[::10]
+
+    # Round the columns back_x,back_y,back_z,thigh_x,thigh_y,thigh_z
+    sampled_df.loc[:, columns_to_round] = sampled_df[columns_to_round].round(4)
 
     # Define the new CSV filename
     new_csv_filename = f'{filename}.csv'
@@ -45,4 +51,4 @@ for filename, df in dataframes_dict.items():
     # Save the sampled dataframe to the new CSV file
     sampled_df.to_csv(new_csv_fullpath, index=False)
 
-    print(f'Νew CSV file created: {new_csv_fullpath}')
+    print(f'New CSV file created: {new_csv_fullpath}')
