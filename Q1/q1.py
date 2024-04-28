@@ -1,7 +1,9 @@
 #version 3
 
 import os
+from matplotlib import pyplot as plt
 import pandas as pd
+import seaborn as sns
 import glob
 
 # Get the current working directory (where the script is running)
@@ -41,6 +43,65 @@ for filename, df in dataframes_dict.items():
 
     # Round the columns back_x,back_y,back_z,thigh_x,thigh_y,thigh_z
     sampled_df.loc[:, columns_to_round] = sampled_df[columns_to_round].round(4)
+
+    # Calculate the frequency of each label
+    label_distribution = sampled_df['label'].value_counts()
+
+    # Create a bar chart
+    plt.figure(figsize=(8, 6))
+    sns.barplot(x=label_distribution.index, y=label_distribution.values)
+    plt.xlabel('Activity Label')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Activity Labels')
+    plt.show()
+
+    # Calculate summary statistics for each group
+    grouped_data = sampled_df.groupby('label')
+
+    # Columns to analyze
+    sensor_columns = ['back_x', 'back_y', 'back_z', 'thigh_x', 'thigh_y', 'thigh_z']
+
+    # Plot histograms for each sensor value grouped by label
+    for label, group in grouped_data:
+        plt.figure(figsize=(12, 8))
+        plt.suptitle(f'Distribution of Sensor Values for Activity ID {label}')
+        
+        # Plot histograms for each sensor column
+        for idx, sensor_col in enumerate(sensor_columns, 1):
+            plt.subplot(2, 3, idx)
+            sns.histplot(group[sensor_col], kde=True, bins=30, color='blue')
+            plt.title(sensor_col)
+        
+        plt.tight_layout()
+        plt.show()
+
+        '''# Plot acceleration over time for each action
+        plt.figure(figsize=(12, 8))
+        plt.suptitle(f'Acceleration Over Time for Activity ID {label}')
+        
+        # Plot each sensor column against time
+        for idx, sensor_col in enumerate(sensor_columns, 1):
+            plt.subplot(2, 3, idx)
+            sns.lineplot(x=group['timestamp'], y=group[sensor_col])
+            plt.title(sensor_col)
+            plt.xlabel('Time')
+            plt.ylabel('Acceleration (g)')
+        
+        plt.tight_layout()
+        plt.show()
+        THE ABOVE NEEDS WORK
+        1.FIND A WAY TO NOT DISPLAY EVERY FIGURE AFTER CLODING THE OTHER
+        2.MAKE FEWER GRAPHS (CONSIDER MAKING LIKE A MEDIAN)
+'''
+    # Plot boxplots for each sensor value grouped by label
+    plt.figure(figsize=(15, 10))
+    for idx, sensor_col in enumerate(sensor_columns):
+        plt.subplot(2, 3, idx + 1)
+        sns.boxplot(data=sampled_df, x='label', y=sensor_col)
+        plt.title(sensor_col)
+    plt.suptitle('Boxplots of Sensor Values by Label')
+    plt.tight_layout()
+    plt.show()
 
     # Define the new CSV filename
     new_csv_filename = f'{filename}.csv'
