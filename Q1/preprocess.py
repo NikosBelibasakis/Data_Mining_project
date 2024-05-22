@@ -13,8 +13,12 @@ folder_path = os.path.join(current_dir, 'harth')
 # Get all the CSV files from the folder
 csv_files = glob.glob(folder_path + '/*.csv')
 
-# Create a dictionary to store the dataframes / CSV files
-dataframes_dict = {}
+# Create the 'new_data' folder (where the new CSV files will be stored) in the current directory if it doesn't exist
+new_data_path = os.path.join(current_dir, 'new_data')
+os.makedirs(new_data_path, exist_ok=True)
+
+# Columns to round to 4 decimal digits (back_x,back_y,back_z,thigh_x,thigh_y,thigh_z)
+columns_to_round = ["back_x", "back_y", "back_z", "thigh_x", "thigh_y", "thigh_z"]
 
 # Load each CSV file into the dictionary
 for csv_file in csv_files:
@@ -24,18 +28,6 @@ for csv_file in csv_files:
     # Load the CSV file into a dataframe
     df = pd.read_csv(csv_file)
 
-    # Store the dataframe in the dictionary. The key is the file's name.
-    dataframes_dict[filename] = df
-
-# Create the 'new_data' folder (where the new CSV files will be stored) in the current directory if it doesn't exist
-new_data_path = os.path.join(current_dir, 'new_data')
-os.makedirs(new_data_path, exist_ok=True)
-
-# Columns to round to 4 decimal digits (back_x,back_y,back_z,thigh_x,thigh_y,thigh_z)
-columns_to_round = ["back_x", "back_y", "back_z", "thigh_x", "thigh_y", "thigh_z"]
-
-# Sample every 10 rows and create a new CSV file for each original CSV
-for filename, df in dataframes_dict.items():
     # Sample every 10th row
     sampled_df = df.iloc[::10]
 
