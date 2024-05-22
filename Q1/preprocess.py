@@ -28,6 +28,10 @@ for csv_file in csv_files:
     # Load the CSV file into a dataframe
     df = pd.read_csv(csv_file)
 
+    #delete unneeded columns like "index" and "Unnamed" that exists in some csv files
+    unneeded=df.filter(['index','Unnamed: 0'])
+    df=df.drop(unneeded,axis=1)
+
     # Sample every 10th row
     sampled_df = df.iloc[::10]
 
