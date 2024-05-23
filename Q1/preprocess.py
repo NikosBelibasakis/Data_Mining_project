@@ -4,6 +4,8 @@ import os
 import pandas as pd
 import glob
 
+pd.options.mode.chained_assignment = None
+
 # Get the current working directory (where the script is running)
 current_dir = os.getcwd()
 
@@ -19,6 +21,9 @@ os.makedirs(new_data_path, exist_ok=True)
 
 # Columns to round to 4 decimal digits (back_x,back_y,back_z,thigh_x,thigh_y,thigh_z)
 columns_to_round = ["back_x", "back_y", "back_z", "thigh_x", "thigh_y", "thigh_z"]
+
+# Dictionary to map original label values to new ones for the modified new CSV files
+label_mapping = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 13: 8, 14: 9, 130: 10, 140: 11}
 
 # Load each CSV file into the dictionary
 for csv_file in csv_files:
@@ -44,6 +49,9 @@ for csv_file in csv_files:
     # while most of them have only for milliseconds which is easier for analyzing our data
     # Truncate the timestamps in the specified columns
     sampled_df.loc[:, 'timestamp'] = sampled_df['timestamp'].str[:23]
+
+    # Modify the 'label' column for the sampled dataframe
+    sampled_df['label'] = sampled_df['label'].map(label_mapping)
 
     # Define the new CSV filename
     new_csv_filename = f'{filename}.csv'
