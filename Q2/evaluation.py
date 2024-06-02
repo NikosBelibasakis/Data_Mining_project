@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc
 
-def get_roc_curve(model,X_test,y_test):
+def get_roc_curve(model,X_test,y_test, ifNN=False):
     # Get predicted probabilities for each class
-    y_score = model.predict_proba(X_test)
+    if ifNN==True:
+        y_score = model.predict(X_test)
+    else:
+        y_score = model.predict_proba(X_test)
 
     # Compute ROC curve and ROC area for each class
     fpr = dict()
